@@ -4,7 +4,25 @@
   <title>AI Ebook Generator</title>
 </head>
 <body>
-  <h1>Welcome to AI Ebook Generator!</h1>
-  <p>Your AI ebook creator will be here soon.</p>
+  <h1>AI Ebook Generator</h1>
+  <p>Type a topic below and click "Generate Ebook".</p>
+
+  <textarea id="prompt" placeholder="Enter your ebook topic" rows="4" cols="50"></textarea><br><br>
+  <button onclick="generateEbook()">Generate Ebook</button>
+
+  <h2>Output:</h2>
+  <pre id="output"></pre>
+
+  <script>
+    async function generateEbook() {
+      const prompt = document.getElementById('prompt').value;
+      document.getElementById('output').textContent = "Generating...";
+
+      // For now, we don’t call AI yet. This is just a placeholder
+      setTimeout(() => {
+        document.getElementById('output').textContent = "Your AI-generated ebook will appear here for the topic: " + prompt;
+      }, 500);
+    }
+  </script>
 </body>
 </html>
