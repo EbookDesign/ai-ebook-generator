@@ -1,17 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Ebook Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      max-width: 800px;
-      margin: auto;
-      background: #f4f4f4;
+<script>
+  async function generateEbook() {
+    const prompt = document.getElementById('prompt').value;
+    document.getElementById('output').textContent = "Generating...";
+
+    try {
+      const response = await fetch("https://eoc3l7sjxfjuas1.m.pipedream.net", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+      });
+
+      const data = await response.json();
+      // The AI-generated text usually comes in data.text or data.body, depending on Pipedream settings
+      document.getElementById('output').textContent = data.text || JSON.stringify(data);
+    } catch (err) {
+      document.getElementById('output').textContent = "Error: " + err;
     }
-    h1 { text-align: center; }
-    textarea { width: 100%; height: 100px; padding: 10px; font-size: 16px; }
-    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; }
+  }
+</script>
