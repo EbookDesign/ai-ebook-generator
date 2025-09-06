@@ -25,15 +25,16 @@
 
   <textarea id="prompt" placeholder="Enter your ebook topic"></textarea><br>
   <button id="generateBtn">Generate Ebook</button>
-  <div class="note">Please wait for the ebook to generate before clicking again.</div>
+  <div class="note">Mock Mode is ON — ebooks are simulated for testing.</div>
 
   <pre id="output">Output will appear here.</pre>
 
   <script>
+    const MOCK_MODE = true; // set to false later when you enable real AI
     let generating = false;
 
     document.getElementById('generateBtn').addEventListener('click', async () => {
-      if (generating) return; // block multiple clicks
+      if (generating) return; 
       generating = true;
 
       const prompt = document.getElementById('prompt').value.trim();
@@ -45,6 +46,25 @@
 
       document.getElementById('output').textContent = "Generating...";
 
+      if (MOCK_MODE) {
+        // Simulate a fake AI response for free
+        setTimeout(() => {
+          document.getElementById('output').textContent =
+            `# ${prompt} — Ebook\n\n` +
+            `Chapter 1: Introduction\n` +
+            `This ebook on "${prompt}" gives you powerful insights and strategies.\n\n` +
+            `Chapter 2: Core Concepts\n` +
+            `Learn the most important principles behind ${prompt}.\n\n` +
+            `Chapter 3: Advanced Tips\n` +
+            `Boost your skills and apply expert techniques.\n\n` +
+            `Chapter 4: Conclusion\n` +
+            `Mastering ${prompt} takes time, but this ebook gets you started.`;
+          generating = false;
+        }, 1500); // simulate a delay
+        return;
+      }
+
+      // REAL AI MODE (disabled in mock mode)
       try {
         const response = await fetch("https://eoc3l7sjxfjuas1.m.pipedream.net", {
           method: "POST",
