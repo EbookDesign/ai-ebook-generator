@@ -11,7 +11,6 @@
       });
 
       const data = await response.json();
-      // The AI-generated text usually comes in data.text or data.body, depending on Pipedream settings
       document.getElementById('output').textContent = data.text || JSON.stringify(data);
     } catch (err) {
       document.getElementById('output').textContent = "Error: " + err;
