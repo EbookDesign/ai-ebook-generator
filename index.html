@@ -1,85 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Ebook Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    h1 { text-align: center; }
-    textarea { width: 100%; height: 100px; padding: 10px; font-size: 16px; }
-    button { padding: 10px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; }
-    pre { background: #fff; padding: 20px; white-space: pre-wrap; word-wrap: break-word; margin-top: 20px; }
-    .note { font-size: 14px; color: #555; margin-top: 10px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Ebook Generator</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f4f4f4; }
+  h1 { text-align: center; }
+  .topic-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+  .topic-buttons button { padding: 10px 15px; font-size: 14px; cursor: pointer; border-radius: 5px; border: none; background-color: #007bff; color: white; }
+  .topic-buttons button:hover { background-color: #0056b3; }
+  #output { background: #fff; padding: 20px; white-space: pre-wrap; word-wrap: break-word; margin-top: 20px; }
+  .note { font-size: 14px; color: #555; margin-top: 10px; }
+  #downloadBtn { display: none; margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 5px; border: none; background-color: #28a745; color: white; }
+  #downloadBtn:hover { background-color: #1e7e34; }
+</style>
 </head>
 <body>
-  <h1>AI Ebook Generator</h1>
-  <p>Type a topic below and click "Generate Ebook".</p>
 
-  <textarea id="prompt" placeholder="Enter your ebook topic"></textarea><br>
-  <button id="generateBtn">Generate Ebook</button>
-  <div class="note">Mock Mode is ON — ebooks are simulated for testing.</div>
+<h1>AI Ebook Generator</h1>
+<p class="note">Click a topic below to generate your ebook (Mock Mode: Free & Instant)</p>
 
-  <pre id="output">Output will appear here.</pre>
+<div class="topic-buttons" id="topicButtons">
+  <!-- Buttons will be generated here -->
+</div>
 
-  <script>
-    const MOCK_MODE = true; // set to false later when you enable real AI
-    let generating = false;
+<pre id="output">Output will appear here.</pre>
+<button id="downloadBtn">Download PDF</button>
 
-    document.getElementById('generateBtn').addEventListener('click', async () => {
-      if (generating) return; 
-      generating = true;
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const ebooks = {
+  "Productivity Hacks": `# Productivity Hacks — Ebook
 
-      const prompt = document.getElementById('prompt').value.trim();
-      if (!prompt) {
-        document.getElementById('output').textContent = "Please enter a topic.";
-        generating = false;
-        return;
-      }
+Chapter 1: Introduction
+Productivity is about making the most of your time and energy. In this ebook, you’ll discover practical strategies to work smarter and create lasting habits.
 
-      document.getElementById('output').textContent = "Generating...";
+Chapter 2: Core Principles
+Prioritize high-impact tasks, minimize distractions, and manage energy. Use time-blocking and goal setting to transform your workflow.
 
-      if (MOCK_MODE) {
-        // Simulate a fake AI response for free
-        setTimeout(() => {
-          document.getElementById('output').textContent =
-            `# ${prompt} — Ebook\n\n` +
-            `Chapter 1: Introduction\n` +
-            `This ebook on "${prompt}" gives you powerful insights and strategies.\n\n` +
-            `Chapter 2: Core Concepts\n` +
-            `Learn the most important principles behind ${prompt}.\n\n` +
-            `Chapter 3: Advanced Tips\n` +
-            `Boost your skills and apply expert techniques.\n\n` +
-            `Chapter 4: Conclusion\n` +
-            `Mastering ${prompt} takes time, but this ebook gets you started.`;
-          generating = false;
-        }, 1500); // simulate a delay
-        return;
-      }
+Chapter 3: Tools & Techniques
+Explore apps, routines, and techniques like Pomodoro or progress tracking to enhance focus and efficiency.
 
-      // REAL AI MODE (disabled in mock mode)
-      try {
-        const response = await fetch("https://eoc3l7sjxfjuas1.m.pipedream.net", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: prompt })
-        });
+Chapter 4: Advanced Tips
+Learn strategies for deep work, managing multiple projects, and handling interruptions like top performers.
 
-        const data = await response.json();
-        document.getElementById('output').textContent = data.text;
-      } catch (err) {
-        document.getElementById('output').textContent = "Error: " + err;
-      }
+Chapter 5: Maintaining Momentum
+Build lasting habits, avoid burnout, and track progress with reflection and adjustments.
 
-      generating = false;
-    });
-  </script>
-</body>
-</html>
+Chapter 6: Conclusion
+Small consistent steps can significantly boost productivity over time.`,
+
+  "Fitness & Diet Guide": `# Fitness & Diet Guide — Ebook
+
+Chapter 1: Why Fitness Matters
+Exercise impacts both physical and mental health. Discover the benefits of regular activity.
+
+Chapter 2: Nutrition Basics
+Understand macronutrients, micronutrients, and hydration to fuel your body properly.
+
+Chapter 3: Training Programs
+Learn cardio, strength, and flexibility routines suitable for beginners and advanced users.
+
+Chapter 4: Staying Consistent
+Create a realistic schedule, set achievable goals, and stay motivated for long-term success.
+
+Chapter 5: Tips & Tricks
+Track progress, mix workouts to avoid plateaus, and combine diet and exercise for best results.
+
+Chapter 6: Conclusion
+With structured routines and proper nutrition, fitness becomes sustainable and rewarding.`,
+
+  "Start Your Online Business": `# Start Your Online Business — Ebook
+
+Chapter 1: Idea to Execution
+Choose the right online business model and plan carefully to avoid common pitfalls.
+
+Chapter 2: Building Your Platform
+Create websites, stores, or digital tools that attract and retain customers.
+
+Chapter 3: Marketing Strategies
+Leverage social media, SEO, and paid ads to grow your audience and sales.
+
+Chapter 4: Scaling Up
+Automate processes, hire help, and streamline operations for sustainable growth.
+
+Chapter 5: Financial Management
+Budgeting, cash flow tracking, and reinvesting profits ensure long-term stability.
+
+Chapter 6: Conclusion
+Persistence, adaptability, and learning from feedback are keys to online business success.`,
+
+  "Mastering Focus & Mindset": `# Mastering Focus & Mindset — Ebook
+
+Chapter 1: Why Focus is Power
+Understand concentration and how focus drives productivity and results.
+
+Chapter 2: Mindset Shifts
+Adopt a growth mindset and develop resilience in the face of challenges.
+
+Chapter 3: Daily Practices
+Meditation, journaling, and deep work routines improve mental clarity.
+
+Chapter 4: Managing Distractions
+Strategies to reduce interruptions and optimize attention for tasks that matter.
+
+Chapter 5: Long-Term Mastery
+Apply habits consistently and reflect to maintain focus over time.
+
+Chapter 6: Conclusion
+Focus is a skill that can be trained; cultivating it transforms both work and life.`,
+
+  "Personal Finance Made Simple": `# Personal Finance Made Simple — Ebook
+
+Chapter 1: Understanding Money
+Learn to track income and expenses, and set realistic budgets.
+
+Chapter 2: Saving & Investing
+Build emergency funds, invest wisely, and plan for the long term.
+
+Chapter 3: Avoiding Debt
+Use credit responsibly and prioritize paying down high-interest debt.
+
+Chapter 4: Increasing Income
+Side hustles, freelancing, and career growth opportunities.
+
+Chapter 5: Financial Planning Tips
+Set financial goals, automate savings, and regularly review progress.
+
+Chapter 6: Conclusion
+Good financial habits lead to security and freedom; start small and stay consistent.`,
+
+  "Creative Writing Secrets": `# Creative Writing Secrets — Ebook
+
+Chapter 1: The Power of Storytelling
+Learn why stories captivate people and how to use them effectively.
+
+Chapter 2: Building Characters
+Create memorable heroes, villains, and supporting characters.
+
+Chapter 3: Plot & Structure
+Design engaging narratives that keep readers hooked.
+
+Chapter 4: Dialogue & Style
+Write realistic dialogue and develop a unique writing voice.
+
+Chapter 5: Editing & Polishing
+Refine drafts, cut unnecessary words, and improve readability.
+
+Chapter 6: Conclusion
+Mastering writing takes practice, observation, and revision; consistency is key.`,
+
+  "Social Media Growth Strategies": `# Social Media Growth Strategies — Ebook
+
+Chapter 1: Choosing Platforms
+Select networks that align with your audience and goals.
+
+Chapter 2: Content Creation
+Develop engaging posts, videos, or graphics that attract followers.
+
+Chapter 3: Engagement Tactics
+Respond to comments, collaborate with influencers, and grow your community.
+
+Chapter 4: Analytics & Tracking
+Monitor performance and adjust strategies based on data.
+
+Chapter 5: Monetization
+Turn attention into income through ads, sponsorships, or products.
+
+Chapter 6: Conclusion
+Consistent content, engagement, and adaptation lead to social media success.`,
+
+  "Mindfulness & Stress Management": `# Mindfulness & Stress Management — Ebook
+
+Chapter 1: Understanding Stress
+Identify common stressors and recognize early signs of burnout.
+
+Chapter 2: Mindfulness Basics
+Practice meditation, breathing exercises, and present-moment awareness.
+
+Chapter 3: Daily Integration
+Incorporate mindfulness into daily routines for lasting benefits.
+
+Chapter 4: Techniques for Relaxation
+Yoga, journaling, and mindful walking can reduce tension.
+
+Chapter 5: Maintaining Calm
+Build habits that protect mental health and manage challenges effectively.
+
+Chapter 6: Conclusion
+Regular mindfulness practice increases clarity, focus, and well-being.`,
+
+  "Beginner’s Guide to Coding": `# Beginner’s Guide to Coding — Ebook
+
+Chapter 1: Why Learn to Code
+Understand the opportunities and creativity coding can provide.
+
+Chapter 2: Core Concepts
+Learn variables, loops, functions, and logic fundamentals.
+
+Chapter 3: Building Projects
+Start small: websites, apps, or simple games to practice.
+
+Chapter 4: Debugging & Problem Solving
+Techniques to identify issues and improve code quality.
+
+Chapter 5: Next Steps
+Build a portfolio, contribute to projects, and learn advanced topics.
+
+Chapter 6: Conclusion
+Coding is a skill that grows with practice and persistence.`,
+
+  "Digital Marketing Essentials": `# Digital Marketing Essentials — Ebook
+
+Chapter 1: The Digital Landscape
+Discover how businesses use online marketing to reach audiences.
+
+Chapter 2: Key Channels
+SEO, social media, email campaigns, and paid ads explained.
+
+Chapter 3: Creating Strategy
+Plan campaigns, set goals, and target the right audience effectively.
+
+Chapter 4: Measuring Success
+Use analytics, KPIs, and tracking tools to refine marketing efforts.
+
+Chapter 5: Future Trends
+AI, personalization, and emerging platforms shape the future of marketing.
+
+Chapter 6: Conclusion
+Digital marketing is dynamic; consistent learning and experimentation are essential.`
+};
+
+// Generate buttons dynamically
+const topicButtonsContainer = document.getElementById('topicButtons');
+Object.keys(ebooks).forEach(topic => {
+  const btn = document.createElement('button');
+  btn.textContent = topic;
+  btn.addEventListener('click', () => generateEbook(topic));
+  topicButtonsContainer.appendChild(btn);
+});
+
+const output = document.getElementById('output');
+const downloadBtn = document.getElementById('downloadBtn');
+
+function generateEbook(topic) {
+  output.textContent = "Generating...";
+  downloadBtn.style.display = "none";
+  
+  setTimeout(() => {
+    output.textContent = ebooks[topic];
+    downloadBtn.style.display = "inline-block";
+    downloadBtn.onclick = () => downloadPDF(topic, ebooks[topic]);
+  }, 1500); // fake delay for realism
+}
+
+function downloadPDF(title, text) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const lines = text.split("\n");
+  let y = 10;
+  lines.forEach(line => {
+   
