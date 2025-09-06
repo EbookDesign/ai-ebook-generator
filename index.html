@@ -16,6 +16,7 @@
     textarea { width: 100%; height: 100px; padding: 10px; font-size: 16px; }
     button { padding: 10px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; }
     pre { background: #fff; padding: 20px; white-space: pre-wrap; word-wrap: break-word; margin-top: 20px; }
+    .note { font-size: 14px; color: #555; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -23,17 +24,25 @@
   <p>Type a topic below and click "Generate Ebook".</p>
 
   <textarea id="prompt" placeholder="Enter your ebook topic"></textarea><br>
-  <button onclick="generateEbook()">Generate Ebook</button>
+  <button id="generateBtn">Generate Ebook</button>
+  <div class="note">Please wait for the ebook to generate before clicking again.</div>
 
   <pre id="output">Output will appear here.</pre>
 
   <script>
-    async function generateEbook() {
+    let generating = false;
+
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+      if (generating) return; // block multiple clicks
+      generating = true;
+
       const prompt = document.getElementById('prompt').value.trim();
       if (!prompt) {
-        document.getElementById('output').textContent = "Please enter a topic first.";
+        document.getElementById('output').textContent = "Please enter a topic.";
+        generating = false;
         return;
       }
+
       document.getElementById('output').textContent = "Generating...";
 
       try {
@@ -44,11 +53,13 @@
         });
 
         const data = await response.json();
-        document.getElementById('output').textContent = data.text || JSON.stringify(data);
+        document.getElementById('output').textContent = data.text;
       } catch (err) {
         document.getElementById('output').textContent = "Error: " + err;
       }
-    }
+
+      generating = false;
+    });
   </script>
 </body>
 </html>
